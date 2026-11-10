@@ -1,4 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using WebSalesMVC.Data;
+using WebSalesMVC.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("WebSalesMVCContext") ?? throw new InvalidOperationException("Connection string 'WebSalesMVCContext' not found.");
@@ -6,16 +8,26 @@ var connectionString = builder.Configuration.GetConnectionString("WebSalesMVCCon
 builder.Services.AddDbContext<WebSalesMVCContext>(options => options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
 
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddScoped<SeedingService>(); //Criei a classe no Data antes de adicionar aqui
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+
+// Equivalente ao "seedingService.Seed()" do Configure do professor
+if (app.Environment.IsDevelopment())
+{
+    using (var scope = app.Services.CreateScope())
+    {
+        var seedingService = scope.ServiceProvider.GetRequiredService<SeedingService>();
+        seedingService.Seed();
+    }
+}
+else
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
