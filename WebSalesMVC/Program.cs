@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using WebSalesMVC.Data;
 using WebSalesMVC.Models;
+using WebSalesMVC.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("WebSalesMVCContext") ?? throw new InvalidOperationException("Connection string 'WebSalesMVCContext' not found.");
@@ -12,6 +13,7 @@ builder.Services.AddDbContext<WebSalesMVCContext>(options => options.UseMySql(co
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<SeedingService>(); //Criei a classe no Data antes de adicionar aqui
+builder.Services.AddScoped<SellerService>();
 
 var app = builder.Build();
 
